@@ -49,6 +49,9 @@ pub struct HoFEntry {
 pub struct HallOfFame {
     pub entries: Vec<HoFEntry>,
     pub max_size: usize,
+    /// Last completed generation (for resuming)
+    #[serde(default)]
+    pub last_generation: usize,
 }
 
 impl HallOfFame {
@@ -56,6 +59,7 @@ impl HallOfFame {
         HallOfFame {
             entries: Vec::new(),
             max_size,
+            last_generation: 0,
         }
     }
 
@@ -554,8 +558,9 @@ pub fn evolution_loop<B: AutodiffBackend>(
     log::info!("Starting evolution...");
 
     let mut stagnation_counter: usize = 0;
+    let start_gen = hof.last_generation;
 
-    for gen in 0..config.num_generations {
+    for gen in start_gen..config.num_generations {
         log::info!("━━━ Generation {} ━━━", gen + 1);
 
         // === Phase 1: Curriculum — pick arena config ===
@@ -773,6 +778,9 @@ pub fn evolution_loop<B: AutodiffBackend>(
             hof.len(), config.hof_max_size,
             stagnation_counter, config.chaos_stagnation_threshold
         );
+
+        // Update last completed generation
+        hof.last_generation = gen + 1;
 
         // === Phase 11: Periodic checkpoint ===
         if (gen + 1) % config.checkpoint_interval == 0 {
