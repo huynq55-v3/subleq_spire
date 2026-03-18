@@ -179,7 +179,7 @@ mod tests {
         let mut arena = Arena::new(config);
 
         // Gladiator 0: immediately halts (invalid address)
-        let prog_halt = vec![200, 0, 0]; // A=200 is out of bounds → immediate death
+        let prog_halt = vec![999, 0, 0]; // A=999 is out of bounds → immediate death
 
         // Gladiator 1: self-loop (will survive until cycle limit)
         // A=64, B=64, C=64 → mem[64] -= mem[64] = 0, <=0 so jump to 64 (loop)
@@ -203,8 +203,8 @@ mod tests {
         let mut arena = Arena::new(config);
 
         // Both programs immediately halt (out-of-bounds addresses)
-        let prog_a = vec![200, 0, 0];
-        let prog_b = vec![200, 0, 0];
+        let prog_a = vec![999, 0, 0];
+        let prog_b = vec![999, 0, 0];
 
         arena.spawn(&[prog_a, prog_b]);
         let result = arena.run_battle();
