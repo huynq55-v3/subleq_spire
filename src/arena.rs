@@ -66,16 +66,21 @@ impl Arena {
     ///
     /// Panics if there are too many gladiators for the memory size.
     pub fn spawn(&mut self, programs: &[Vec<i64>]) {
-        let max_gladiators = self.config.memory_size / self.config.gladiator_slot_size;
-        assert!(
-            programs.len() <= max_gladiators,
-            "Too many gladiators ({}) for arena (max {})",
-            programs.len(),
-            max_gladiators
-        );
+        let required_size = programs.len() * self.config.gladiator_slot_size;
 
-        // Reset memory
-        self.memory.fill(0);
+        // Dynamically expand memory if needed to fit all fighters
+        if required_size > self.config.memory_size {
+            log::info!(
+                "Arena auto-resize: {} → {} cells ({} fighters × {} slot)",
+                self.config.memory_size, required_size,
+                programs.len(), self.config.gladiator_slot_size
+            );
+            self.config.memory_size = required_size;
+            self.memory = vec![0; required_size];
+        } else {
+            // Reset memory
+            self.memory.fill(0);
+        }
         self.gladiators.clear();
 
         for (i, program) in programs.iter().enumerate() {

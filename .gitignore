@@ -1,1 +1,5 @@
 /target
+checkpoints/hall_of_fame.json
+checkpoints/model.mpk
+.gitignore
+replay_buffer.json
