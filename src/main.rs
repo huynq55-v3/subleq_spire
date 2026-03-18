@@ -35,8 +35,10 @@ fn main() {
         train_steps_per_gen: 3,
         learning_rate: 1e-3,
         temperature: 1.0,
-        max_program_tokens: 48,   // ~16 instructions max
-        buffer_capacity: 200,
+        max_program_tokens: 48,        // ~16 instructions max
+        buffer_capacity: 1000,         // Replay buffer: 1000 winning sequences
+        train_batch_size: 32,          // Random subset per training step
+        checkpoint_interval: 10,       // Save every 10 generations
         arena_config: arena::ArenaConfig {
             memory_size: 1024,
             gladiator_slot_size: 64,
